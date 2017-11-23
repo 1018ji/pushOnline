@@ -6,7 +6,7 @@ indent='---'
 function echoRed()
 {
 	echo -e "\033[31m$1\033[0m"
-	echo -e "\033[31m$2. 程序因异常终止执行退出...\033[0m"
+	echo -e "\033[31m$2. 程序因异常终止执行退出\033[0m"
 	exit 1
 }
 
@@ -44,7 +44,7 @@ echoGreen "${indent}${currentPath}"
 
 # 输出当前branch
 echoBlack '3. 输出项目Branch'
-getGitBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败...' 4
+getGitBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败' 4
 currentBranch=${getGitBranch#refs/heads/}
 echoGreen "${indent}${currentBranch}"
 
@@ -76,7 +76,7 @@ fi
 # 切换到 master 目录
 echoBlack '5. 切换分支为master'
 git checkout master >/dev/null 2>&1
-masterBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败...' 6
+masterBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败' 6
 
 if [[ "$masterBranch" =~ master ]]; then
 	echoGreen ${indent}'当前分支 '${currentBranch}' 已切换至 master'
@@ -87,20 +87,20 @@ fi
 # 拉取 master 更新
 echoBlack '6. 更新 master 分支'
 # >/dev/null 2>&1
-git pull --rebase origin master || echoRed ${indent}'执行 git pull --rebase origin master 失败...' 7
+git pull --rebase origin master || echoRed ${indent}'执行 git pull --rebase origin master 失败' 7
 echoGreen ${indent}'执行 git pull --rebase origin master 成功'
 echoGreen ${indent}'当前分支 master 更新完成'
 
 # rebase 到目标分支
 echoBlack '7. 更新 '${currentBranch}' 分支'
 # >/dev/null 2>&1
-git rebase ${currentBranch} || echoRed ${indent}'执行 git rebase '${currentBranch}' 失败...' 8
+git rebase ${currentBranch} || echoRed ${indent}'执行 git rebase '${currentBranch}' 失败' 8
 echoGreen ${indent}'执行 git rebase '${currentBranch}' 成功'
 echoGreen ${indent}'当前分支 '${currentBranch}' 更新完成'
 
 # merage 到 master 分支
 echoBlack '8. 合并 '${currentBranch}' 分支 至 master 分支'
-git merge --no-ff ${currentBranch} || echoRed ${indent}'执行 git merge --no-ff '${currentBranch}' 失败...' 9
+git merge --no-ff ${currentBranch} || echoRed ${indent}'执行 git merge --no-ff '${currentBranch}' 失败' 9
 echoGreen ${indent}'执行 git merge --no-ff '${currentBranch}' 成功'
 echoGreen ${indent}'分支 '${currentBranch}' 合并至 master 完成'
 
@@ -109,9 +109,12 @@ read -r -p "9. 上述操作无异常执行上线操作？ [Y/n] " input
 
 case $input in
     [yY][eE][sS]|[yY])
+        echoGreen ${indent}'执行上线操作 git push origin master'
+		git push origin master || echoRed ${indent}'执行 git push origin master 失败' 10
+		echoGreen ${indent}'当前分支内容已推送到远程分支'
         echoGreen ${indent}'执行上线操作 pushtest'
 		pushtest || echoRed ${indent}'执行上线失败' 10
-		echoGreen ${indent}'上线操作完成。'
+		echoGreen ${indent}'上线 pushtest 操作完成'
 		;;
     *)
 	echoRed ${indent}'不上线，退出...'
@@ -122,7 +125,7 @@ esac
 # 切换至 当前开发分支
 echoBlack '10.切换分支为开发分支'
 git checkout ${currentBranch} >/dev/null 2>&1
-getGitBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败...' 6
+getGitBranch=$(git symbolic-ref HEAD 2> /dev/null) || echoRed ${indent}'获取当前分支失败' 6
 devBranch=${getGitBranch#refs/heads/}
 
 if [[ "$currentBranch" = "$devBranch" ]]; then
@@ -133,7 +136,7 @@ fi
 
 # rebase master 分支
 echoBlack '11.当前分支 rebase master 分支'
-git rebase master || echoRed ${indent}'执行 git rebase master 失败...' 12
+git rebase master || echoRed ${indent}'执行 git rebase master 失败' 12
 echoGreen ${indent}'执行 git rebase master 成功'
 echoGreen ${indent}'分支 master 合并至 '${currentBranch}' 完成'
 
