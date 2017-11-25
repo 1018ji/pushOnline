@@ -123,8 +123,8 @@ fi
 
 # merage 到 master 分支
 echoBlack '11. 合并 '${currentBranch}' 分支 至 master 分支'
-git merge --no-ff ${currentBranch} || echoRed ${indent}'执行 git merge --no-ff '${currentBranch}' 失败' 12
-echoGreen ${indent}'执行 git merge --no-ff '${currentBranch}' 成功'
+git merge --no-ff --no-edit ${currentBranch} || echoRed ${indent}'执行 git merge --no-ff --no-edit '${currentBranch}' 失败' 12
+echoGreen ${indent}'执行 git merge --no-ff --no-edit '${currentBranch}' 成功'
 echoGreen ${indent}'分支 '${currentBranch}' 合并至 master 分支完成'
 
 # 用户确认上线操作
@@ -164,5 +164,13 @@ echoGreen ${indent}'执行 git rebase master 成功'
 echoGreen ${indent}'分支 master 合并至 '${currentBranch}' 分支完成'
 
 ## 完成
-echoPurple '15.已经结束了'
+echoPurple '15. 已经结束了'
+
+# 输出最近1条的上线 message
+echoBlack '16. 当前分支最近 commit 说明'
+echoGreen '---------------------'
+git --no-pager log --no-merges --pretty=oneline -5
+echoGreen '---------------------'
+
+# 推出
 exit 0
